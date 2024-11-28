@@ -1,0 +1,151 @@
+#include <stdio.h> #include <stdlib.h> #include <string.h>
+
+
+// Structure to represent a contact struct Contact {
+char name[50]; char phone[20];
+struct Contact* prev;
+struct Contact* next;
+};
+
+
+
+// Function to create a new contact
+struct Contact* createContact(char name[], char phone[]) {
+struct Contact* newContact = (struct Contact*)malloc(sizeof(struct Contact));
+strcpy(newContact->name, name); strcpy(newContact->phone, phone); newContact->prev = NULL; newContact->next = NULL;
+return newContact;
+
+}
+
+
+
+// Function to add a contact to the phone directory
+
+void addContact(struct Contact** head, char name[], char phone[]) { struct Contact* newContact = createContact(name, phone);
+if (*head == NULL) {
+
+*head = newContact;
+} else {
+struct Contact* current = *head; while (current->next != NULL) {
+current = current->next;
+}
+current->next = newContact;
+newContact->prev = current;
+
+}
+}
+
+
+
+// Function to delete a contact from the phone directory void deleteContact(struct Contact** head, char name[]) {
+struct Contact* current = *head; while (current != NULL) {
+if (strcmp(current->name, name) == 0) {
+if (current->prev != NULL) {
+
+current->prev->next = current->next;
+} else {
+*head = current->next;
+
+}
+
+if (current->next != NULL) {
+current->next->prev = current->prev;
+
+}
+free(current);
+printf("Contact '%s' deleted successfully.\n", name);
+return;
+
+}
+
+current = current->next;
+}
+
+printf("Contact '%s' not found.\n", name);
+}
+
+
+
+// Function to display all contacts in the phone directory
+void displayContacts(struct Contact* head) {
+
+if (head == NULL) {
+printf("Phone directory is empty.\n"); return;
+}
+printf("Contacts in the phone directory:\n"); while (head != NULL) {
+printf("Name: %s, Phone: %s\n", head->name, head->phone); head = head->next;
+}
+}
+
+
+// Function to search for a contact in the phone directory void searchContact(struct Contact* head, char name[]) {
+while (head != NULL) {
+if (strcmp(head->name, name) == 0) { printf("Contact found:\n");
+printf("Name: %s, Phone: %s\n", head->name, head->phone);
+return;
+}
+
+head = head->next;
+}
+
+printf("Contact '%s' not found.\n", name);
+}
+
+
+
+// Function to edit a contact in the phone directory
+void editContact(struct Contact** head, char name[], char phone[]) {
+struct Contact* current = *head;
+
+while (current != NULL) {
+if (strcmp(current->name, name) == 0) {
+strcpy(current->phone, phone);
+printf("Contact '%s' edited successfully.\n", name); return;
+}
+current = current->next;
+
+}
+printf("Contact '%s' not found.\n", name);
+}
+
+
+int main() {
+struct Contact* phoneDirectory = NULL; int choice;
+char name[50], phone[20];
+
+
+do {
+printf("\nPhone Directory Menu:\n");
+printf("1. Add Contact\n"); printf("2. Delete Contact\n"); printf("3. Display All Contacts\n"); printf("4. Search Contact\n"); printf("5. Edit Contact\n"); printf("6. Exit\n");
+printf("Enter your choice: "); scanf("%d", &choice);
+
+switch (choice) { case 1:
+printf("Enter name: "); scanf("%s", name);
+
+printf("Enter phone number: "); scanf("%s", phone);
+addContact(&phoneDirectory, name, phone);
+break;
+
+case 2:
+printf("Enter name to delete: "); scanf("%s", name); deleteContact(&phoneDirectory, name); break;
+case 3:
+displayContacts(phoneDirectory); break;
+case 4:
+printf("Enter name to search: "); scanf("%s", name); searchContact(phoneDirectory, name); break;
+case 5:
+printf("Enter name to edit: "); scanf("%s", name);
+printf("Enter new phone number: ");
+scanf("%s", phone); editContact(&phoneDirectory, name, phone); break;
+
+case 6:
+printf("Exiting...\n"); break;
+default:
+printf("Invalid choice. Please enter a valid option.\n");
+}
+
+} while (choice != 6);
+
+
+
+return 0;
+}
